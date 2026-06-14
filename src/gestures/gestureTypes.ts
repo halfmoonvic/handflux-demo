@@ -1,10 +1,18 @@
 import type { NormalizedLandmark } from '@mediapipe/tasks-vision';
 
-export type GestureKind = 'none' | 'open-palm' | 'fist' | 'index-point';
+export type GestureKind = 'none' | 'open-palm' | 'fist' | 'index-point' | 'single-finger';
+
+export type TrackedFingerKind = 'fist' | 'thumb' | 'index' | 'middle' | 'ring' | 'pinky';
 
 export type Point2D = {
   x: number;
   y: number;
+};
+
+export type TrackedFinger = {
+  kind: TrackedFingerKind;
+  tip: Point2D;
+  speed: number;
 };
 
 export type HandSnapshot = {
@@ -13,6 +21,7 @@ export type HandSnapshot = {
   confidence: number;
   palmCenter: Point2D;
   indexTip: Point2D;
+  trackedPoints: TrackedFinger[];
   openness: number;
   speed: number;
   landmarks: NormalizedLandmark[];
@@ -25,6 +34,7 @@ export const emptyHandSnapshot: HandSnapshot = {
   confidence: 0,
   palmCenter: { x: 0.5, y: 0.5 },
   indexTip: { x: 0.5, y: 0.5 },
+  trackedPoints: [],
   openness: 0,
   speed: 0,
   landmarks: [],
