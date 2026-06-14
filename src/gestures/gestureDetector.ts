@@ -82,18 +82,22 @@ export function detectGesture(
 
   const wrist = mirrorPoint(landmarks[0]);
   const palmCenter = average([0, 5, 9, 13, 17].map((index) => mirrorPoint(landmarks[index])));
+  const indexBase = mirrorPoint(landmarks[5]);
   const indexTip = mirrorPoint(landmarks[8]);
   const palmSize = Math.max(distance(wrist, palmCenter), 0.001);
   const extendedFingers = FINGER_LANDMARKS.filter(({ kind, tip: tipIndex, joint }) => {
     const tip = mirrorPoint(landmarks[tipIndex]);
     const jointPoint = mirrorPoint(landmarks[joint]);
-    const tipPastJoint = distance(tip, wrist) > distance(jointPoint, wrist) * 1.08;
 
-    if (kind !== 'thumb') {
-      return tipPastJoint;
+    if (kind === 'thumb') {
+      const awayFromPalm = distance(tip, palmCenter) > distance(jointPoint, palmCenter) * 1.18;
+      const separatedFromIndex = distance(tip, indexBase) > distance(jointPoint, indexBase) * 1.15;
+      const sidewaysFromJoint = Math.abs(tip.x - jointPoint.x) > palmSize * 0.35;
+
+      return awayFromPalm && (separatedFromIndex || sidewaysFromJoint);
     }
 
-    return tipPastJoint && Math.abs(tip.x - jointPoint.x) > palmSize * 0.55;
+    return distance(tip, wrist) > distance(jointPoint, wrist) * 1.08;
   }).map(({ kind, tip }) => ({
     kind,
     tip: mirrorPoint(landmarks[tip]),
