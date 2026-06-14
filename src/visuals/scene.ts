@@ -51,7 +51,15 @@ export function createHandFluxScene(container: HTMLElement): HandFluxScene {
     const hand = handState.getSnapshot();
     if (hand.detected) {
       orb.setTarget(hand.palmCenter);
-      particles.emitFromPoint(hand.indexTip, hand.speed);
+
+      for (const point of hand.trackedPoints) {
+        particles.emitFromPoint(
+          point.tip,
+          point.speed,
+          point.kind,
+          hand.gesture === 'fist' ? 0.45 : 1,
+        );
+      }
 
       if (hand.gesture === 'open-palm' && lastGesture !== 'open-palm') {
         shockwaves.burst(orb.getPosition());

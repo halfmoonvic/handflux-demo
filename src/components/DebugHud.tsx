@@ -17,6 +17,10 @@ export function DebugHud({ snapshot, status }: DebugHudProps) {
         <strong>{snapshot.detected ? snapshot.gesture : 'none'}</strong>
       </div>
       <div>
+        <span>Active</span>
+        <strong>{snapshot.detected ? snapshot.trackedPoints.length : '--'}</strong>
+      </div>
+      <div>
         <span>Palm</span>
         <strong>
           {snapshot.detected

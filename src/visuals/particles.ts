@@ -30,7 +30,7 @@ export class ParticleSystem {
   private readonly points: THREE.Points;
   private readonly particles: Particle[] = [];
   private theme: VisualTheme = 'ion';
-  private lastPoint: Point2D | null = null;
+  private readonly lastPoints = new Map<string, Point2D>();
 
   constructor(scene: THREE.Scene) {
     this.points = new THREE.Points(this.geometry, this.material);
@@ -41,10 +41,11 @@ export class ParticleSystem {
     this.theme = theme;
   }
 
-  emitFromPoint(point: Point2D, speed: number) {
+  emitFromPoint(point: Point2D, speed: number, pointId = 'default', intensity = 1) {
     const world = toWorld(point);
-    const count = Math.min(18, 4 + Math.round(speed * 9));
+    const count = Math.max(1, Math.min(12, Math.round((3 + speed * 6) * intensity)));
     const colors = THEME_COLORS[this.theme];
+    const lastPoint = this.lastPoints.get(pointId);
 
     for (let index = 0; index < count; index += 1) {
       if (this.particles.length >= MAX_PARTICLES) {
@@ -53,8 +54,8 @@ export class ParticleSystem {
 
       const angle = Math.random() * Math.PI * 2;
       const force = 0.18 + Math.random() * (0.45 + speed * 0.05);
-      const drift = this.lastPoint
-        ? new THREE.Vector3(point.x - this.lastPoint.x, this.lastPoint.y - point.y, 0).multiplyScalar(6)
+      const drift = lastPoint
+        ? new THREE.Vector3(point.x - lastPoint.x, lastPoint.y - point.y, 0).multiplyScalar(6)
         : new THREE.Vector3();
 
       this.particles.push({
@@ -66,7 +67,7 @@ export class ParticleSystem {
       });
     }
 
-    this.lastPoint = point;
+    this.lastPoints.set(pointId, point);
   }
 
   attractTo(target: THREE.Vector3, delta: number) {
