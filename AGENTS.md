@@ -1,5 +1,10 @@
 # Local Agent Notes
 
+## Plan Files
+
+- Write project plan files to `docs/plan/`.
+- Keep plan filenames short, descriptive, and kebab-case.
+
 ## Commit Discipline
 
 - Implement work in small, coherent increments.
